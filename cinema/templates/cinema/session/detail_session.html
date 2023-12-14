@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+<head>
+    <meta charset="UTF-8">
+    <title>Session #{{session.pk}}</title>
+</head>
+{% block content %}
+    {% if messages %}
+        <div class="alert alert-danger" role="alert">
+            {% for message in messages %}
+                {{ message }}
+            {% endfor %}
+       </div>
+        {% endif %}
+<p>
+    {{ session.movie }}
+</p>
+<p>
+     {{ session.price }}
+</p>
+<p>Available places {{ available_seats }}</p>
+
+     {% if request.user.is_authenticated %}
+         <form action="{% url 'cinema:purchase' session_id=session.pk %}" method="post">
+        {% csrf_token %}
+        {{form.as_p}}
+        <input type="submit" value="Buy for {{ session.price }}">
+    </form>
+    {% endif %}
+<h6 class="mt-4"><a class="button" href="{% url 'cinema:update_session' session_id=session.pk %}"><i class="fa fa-play-circle align-middle me-1"></i> Update Session</a></h6>
+<h6 class="mt-4"><a class="button" href="{% url 'cinema:delete_session' session_id=session.pk %}"><i class="fa fa-play-circle align-middle me-1"></i> Delete Session</a></h6>
+{% endblock %}

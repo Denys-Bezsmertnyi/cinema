@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+
+{% block content %}
+    {% if messages %}
+        <div class="alert alert-danger" role="alert">
+            {% for message in messages %}
+                {{ message }}
+            {% endfor %}
+       </div>
+        {% endif %}
+
+    <section id="popular" class="pt-4 pb-5 bg_grey">
+<div class="container">
+<h6 class="mt-4 text-center"><a class="button" href="{% url 'cinema:create_session'%}"><i class="fa fa-play-circle align-middle me-1"></i> Create Session</a></h6>
+ <div class="row trend_1">
+  <div class="col-md-12">
+   <div class="trend_1l">
+    <h4 class="mb-0"><i class="fa fa-youtube-play align-middle col_red me-1"></i> Current <span class="col_red">Sessions</span></h4>
+   </div>
+  </div>
+ </div>
+
+ <div class="row popular_1 mt-4">
+   <ul class="nav nav-tabs border-0 mb-0">
+    <li class="nav-item">
+        <a href="{% url 'cinema:session_list' %}" class="nav-link">
+            <span class="d-md-block">ALL</span>
+        </a>
+    </li>
+    <li class="nav-item">
+        <a href="{% url 'cinema:session_list' %}?filter=today" class="nav-link">
+            <span class="d-md-block">TODAY</span>
+        </a>
+    </li>
+    <li class="nav-item">
+        <a href="{% url 'cinema:session_list' %}?filter=tomorrow" class="nav-link">
+            <span class="d-md-block">TOMORROW</span>
+        </a>
+    </li>
+       <li class="nav-item">
+        <a href="{% url 'cinema:session_list' %}?filter=price" class="nav-link">
+            <span class="d-md-block">Sort by Price</span>
+        </a>
+        </li>
+       <li class="nav-item">
+            <a href="{% url 'cinema:session_list' %}?filter=time" class="nav-link">
+                <span class="d-md-block">Sort by Start Time</span>
+        </a>
+        </li>
+</ul>
+ </div>
+    {% for session in sessions %}
+<div class="popular_2 row mt-4">
+  <div class="tab-content">
+    <div class="tab-pane active" id="home">
+      <div class="popular_2i row">
+        <div class="col-md-6">
+          <div class="popular_2i1 row">
+            <div class="col-md-4 col-4">
+              <div class="popular_2i1lm position-relative clearfix">
+                <div class="popular_2i1lm1 clearfix">
+                    <div class="grid">
+                    <figure class="effect-jazz mb-0">
+                      <a href="#"><img src="{{ session.movie.image.url }}" class="w-100" alt="{{ movie.title }}"></a>
+                    </figure>
+                  </div>
+                </div>
+                <div class="popular_2i1lm2 position-absolute top-0 w-100 text-center clearfix">
+                  <ul>
+                    <li class="d-inline-block"><a href="#"><i class="fa fa-link col_red"></i></a></li>
+                    <li class="d-inline-block"><a href="#"><i class="fa fa-search col_red"></i></a></li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-8 col-8">
+              <div class="popular_2i1r">
+                <h5><a class="col_red" href="{% url 'cinema:session' session_id=session.pk%}">{{ session.movie }}</a></h5>
+                <p>Hall: {{ session.hall }}</p>
+                <p>From {{ session.date_start }} to {{ session.date_end }}</p>
+                  <p>Start {{ session.time_start }} End {{ session.date_end }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+  {% endfor %}
+</div>
+</section>
+
+    <div class="pagination text-center">
+    <span class="step-links">
+        {% if page_obj.has_previous %}
+            <span class="page-link text-center">
+           <h6 class="mb-0"><a class="button" href="?page={{ page_obj.previous_page_number }}">Previous</a></h6>
+            </span>
+        {% endif %}
+
+        <span class="current text-center">
+            Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+        </span>
+
+        {% if page_obj.has_next %}
+            <span class="page-link text-center">
+            <h6 class="mb-0"><a class="button" href="?page={{ page_obj.next_page_number }}">next</a></h6>
+            </span>
+        {% endif %}
+    </span>
+</div>
+{% endblock %}

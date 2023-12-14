@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+<head>
+    <meta charset="UTF-8">
+    <title>Hall #{{hall.pk}}</title>
+</head>
+{% block content %}
+<p>
+    {{ hall.name }}
+</p>
+<p>
+     {{ hall.places }}
+</p>
+{%for session in sessions %}
+    {{ session.price }}
+   <p>Tut reclama!</p>
+{% endfor %}
+    <h6 class="mt-4"><a class="button" href="{% url 'cinema:update_hall' hall_id=hall.pk %}"><i class="fa fa-play-circle align-middle me-1"></i> Update Hall</a></h6>
+    <h6 class="mt-4"><a class="button" href="{% url 'cinema:delete_hall' hall_id=hall.pk %}"><i class="fa fa-play-circle align-middle me-1"></i> Delete Hall</a></h6>
+{% endblock %}

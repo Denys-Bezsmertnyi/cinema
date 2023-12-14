@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block title %}Delete Session{% endblock %}
+
+{% block content %}
+    <h1>Delete Session</h1>
+    <form method="post">
+        {% csrf_token %}
+        <p>Are you sure you want to delete this session: {{ object }}?</p>
+        <input type="submit" value="Confirm delete">
+    </form>
+{% endblock %}

@@ -1,7 +1,6 @@
 from django.contrib import admin
 
-from users.models import Customer, CustomerProfile, Purchase
+from users.models import Customer, CustomerProfile
 
 admin.site.register(Customer)
 admin.site.register(CustomerProfile)
-admin.site.register(Purchase)

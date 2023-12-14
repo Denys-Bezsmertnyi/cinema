@@ -24,3 +24,6 @@ class DateExpiredException(Exception):
 
 class NotEnoughMoneyException(Exception):
     pass
+
+class SoldTicketsException(Exception):
+    pass

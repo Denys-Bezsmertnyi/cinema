@@ -11,7 +11,7 @@ from django.views.generic.edit import UpdateView, DeleteView
 
 from . import exceptions
 from .forms import HallCreationForm, SessionCreationAndUpdationForm, PurchaseForm
-from .mixins import AdminRequiredMixin
+from .mixins import AdminRequiredMixin, HallAndSessionMixin
 from .models import Movie, CinemaHall, MovieSession, Purchase
 
 
@@ -31,7 +31,7 @@ class HallCreateView(AdminRequiredMixin, CreateView):
         return reverse_lazy('cinema:hall', kwargs={'hall_id': self.object.pk})
 
 
-class HallUpdateView(AdminRequiredMixin, UpdateView):
+class HallUpdateView(AdminRequiredMixin, HallAndSessionMixin, UpdateView):
     model = CinemaHall
     pk_url_kwarg = 'hall_id'
     template_name = 'cinema/hall/update_hall.html'
@@ -41,7 +41,7 @@ class HallUpdateView(AdminRequiredMixin, UpdateView):
         return reverse_lazy('cinema:hall', kwargs={'hall_id': self.object.pk})
 
 
-class HallDeleteView(AdminRequiredMixin, DeleteView):
+class HallDeleteView(AdminRequiredMixin, HallAndSessionMixin, DeleteView):
     model = CinemaHall
     success_url = reverse_lazy('cinema:hall_list')
     pk_url_kwarg = 'hall_id'
@@ -86,17 +86,18 @@ class SessionCreateView(AdminRequiredMixin, CreateView):
             return HttpResponseRedirect(self.success_url)
 
 
-class SessionUpdateView(AdminRequiredMixin, UpdateView):
+class SessionUpdateView(AdminRequiredMixin, HallAndSessionMixin, UpdateView):
     model = MovieSession
     pk_url_kwarg = 'session_id'
     template_name = 'cinema/session/update_session.html'
     form_class = SessionCreationAndUpdationForm
 
     def get_success_url(self):
+        messages.success(self.request, "Update successful!")
         return reverse_lazy('cinema:session', kwargs={'session_id': self.object.pk})
 
 
-class SessionDeleteView(AdminRequiredMixin, DeleteView):
+class SessionDeleteView(AdminRequiredMixin, HallAndSessionMixin, DeleteView):
     model = MovieSession
     success_url = reverse_lazy('cinema:session_list')
     pk_url_kwarg = 'session_id'

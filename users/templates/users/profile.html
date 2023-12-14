@@ -1,0 +1,8 @@
+{% extends "base.html" %}
+
+{% block content %}
+    {% for purchase in purchases %}
+        id:{{purchase.pk}}, Film:{{ purchase.session }}, Tickets:{{ purchase.tickets }}, Total $:{{ purchase.total_amount }}
+    {% endfor %}
+    TOTAL MONEY SPENT: {{total_purchases}}
+{% endblock %}

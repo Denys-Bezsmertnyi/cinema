@@ -1,4 +1,4 @@
-from django.urls import path
+from django.urls import path, include
 
 from cinema.views import HallCreateView, HallUpdateView, HallDetailView, MovieListView, HallListView, HallDeleteView, \
     SessionListView, SessionDetailView, SessionCreateView, SessionDeleteView, SessionUpdateView, PurchaseTicketView
@@ -20,5 +20,7 @@ urlpatterns = [
     path('delete-session/<int:session_id>/', SessionDeleteView.as_view(), name='delete_session'),
     path('update-session/<int:session_id>/', SessionUpdateView.as_view(), name='update_session'),
 
-    path('purchase/<int:session_id>/', PurchaseTicketView.as_view(), name='purchase')
+    path('purchase/<int:session_id>/', PurchaseTicketView.as_view(), name='purchase'),
+
+    path('api/', include('cinema.API.urls')),
 ]

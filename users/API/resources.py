@@ -1,9 +1,10 @@
 from django.contrib.auth.hashers import make_password
 from rest_framework import views, status, viewsets
 from rest_framework.authtoken.models import Token
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.response import Response
 
+from users.API.permissions import IsProfileOwner
 from users.API.serializers import UserSerializer, UserRegisterSerializer
 from users.models import Customer, CustomTokenAuth
 
@@ -19,6 +20,16 @@ class LogoutApiView(views.APIView):
 class UserViewSet(viewsets.ModelViewSet):
     queryset = Customer.objects.all()
     authentication_classes = [CustomTokenAuth]
+
+    def get_permissions(self):
+        if self.action in ['create']:
+            permission_classes = []
+        elif self.action in ['list']:
+            permission_classes = [IsAdminUser]
+        else:
+            permission_classes = [IsProfileOwner]
+
+        return [permission() for permission in permission_classes]
 
     def get_serializer_class(self):
         if self.request.method == 'POST':

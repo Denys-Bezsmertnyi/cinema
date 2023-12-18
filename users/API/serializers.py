@@ -29,3 +29,5 @@ class UserRegisterSerializer(serializers.ModelSerializer):
             raise ValidationError("Passwords are different")
         attrs.pop('password2')
         return attrs
+
+# class CustomerProfileSerializer(serializers.ModelSerializer):

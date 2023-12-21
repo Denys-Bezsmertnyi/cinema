@@ -1,7 +1,9 @@
+from django.db.models import Sum
 from rest_framework import serializers
 
 from cinema.API.validations import validate_date_range, validate_time_range, validate_past_date, validate_collisions
-from cinema.models import CinemaHall, MovieSession, Movie
+from cinema.models import CinemaHall, MovieSession, Movie, Purchase
+from users.models import Customer
 
 
 class MovieSerializer(serializers.ModelSerializer):
@@ -19,9 +21,6 @@ class SessionReadSerializer(serializers.ModelSerializer):
 
 
 class SessionWriteSerializer(serializers.ModelSerializer):
-    movie = serializers.PrimaryKeyRelatedField(queryset=Movie.objects.all())
-    hall = serializers.PrimaryKeyRelatedField(queryset=CinemaHall.objects.all())
-
     class Meta:
         model = MovieSession
         fields = ['id', 'hall', 'movie', 'price', 'time_start', 'time_end', 'date_start', 'date_end', 'bought_places']
@@ -61,3 +60,37 @@ class HallWriteSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError('You cannot modify a cinema hall with booked shows.')
         return data
 
+
+class PurchaseReadSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Purchase
+        fields = ['id', 'customer', 'session', 'tickets', 'total_amount']
+        read_only_fields = ['customer']
+
+
+class PurchaseWriteSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Purchase
+        fields = ['id', 'customer', 'session', 'purchase_time', 'tickets', 'total_amount']
+        read_only_fields = ['customer', 'total_amount']
+
+    def validate(self, data):
+        session = data.get('session')
+        tickets = data.get('tickets')
+        available_places = session.hall.places - session.bought_places
+
+        if tickets < 1:
+            raise serializers.ValidationError('Please choose at least one ticket.')
+
+        if session and tickets:
+            if tickets > session.hall.places:
+                raise serializers.ValidationError('You specified more tickets than available in the hall.')
+
+            elif tickets > available_places:
+                raise serializers.ValidationError('You specified more tickets than available for this session.')
+
+            if self.context['request'].user.money < tickets * session.price:
+                raise serializers.ValidationError('Sorry, it seems you do not have enough funds to complete this '
+                                                  'transaction.')
+
+        return data

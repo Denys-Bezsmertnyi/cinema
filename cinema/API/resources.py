@@ -1,14 +1,20 @@
 from datetime import timedelta, datetime
 
-from django.db.models import Q
+from django.db import transaction
+from django.db.models import Q, Sum
 from django.utils import timezone
-from rest_framework import viewsets
+from rest_framework import viewsets, status, serializers
+from rest_framework.decorators import action
+from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
 from cinema.API.mixins import CheckPurchasedTicketsMixin
 from cinema.API.serializers import SessionReadSerializer, HallReadSerializer, MovieSerializer, SessionWriteSerializer, \
-    HallWriteSerializer
-from cinema.models import CinemaHall, MovieSession, Movie
+    HallWriteSerializer, PurchaseWriteSerializer, PurchaseReadSerializer
+from cinema.models import CinemaHall, MovieSession, Movie, Purchase
 from users.API.permissions import IsAdminOrReadOnly
+from users.models import Customer
 
 
 class HallViewSet(CheckPurchasedTicketsMixin, viewsets.ModelViewSet):
@@ -72,3 +78,33 @@ class MovieViewSet(viewsets.ModelViewSet):
     queryset = Movie.objects.all()
     permission_classes = [IsAdminOrReadOnly]
     serializer_class = MovieSerializer
+
+
+class PurchaseViewSet(viewsets.ModelViewSet):
+    queryset = Purchase.objects.all()
+    permission_classes = [IsAuthenticated]
+
+    def get_serializer_class(self):
+        if self.request.method == 'POST':
+            return PurchaseWriteSerializer
+        return PurchaseReadSerializer
+
+    def perform_create(self, serializer):
+        try:
+            session = serializer.validated_data.get('session')
+            tickets = serializer.validated_data.get('tickets')
+
+            session.bought_places += tickets
+
+            total_amount = tickets * session.price
+
+            customer = self.request.user
+
+            customer.money -= total_amount
+
+            with transaction.atomic():
+                serializer.save(customer=customer, total_amount=total_amount)
+                customer.save()
+                session.save()
+        except Exception as e:
+            raise serializers.ValidationError(str(e))

@@ -1,6 +1,9 @@
+from django.db.models import Sum
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 
+from cinema.API.serializers import PurchaseReadSerializer
+from cinema.models import Purchase
 from users.models import Customer
 
 
@@ -30,4 +33,15 @@ class UserRegisterSerializer(serializers.ModelSerializer):
         attrs.pop('password2')
         return attrs
 
-# class CustomerProfileSerializer(serializers.ModelSerializer):
+
+class CustomerOrderSerializer(serializers.ModelSerializer):
+    total_spent = serializers.SerializerMethodField()
+    purchases = PurchaseReadSerializer(many=True)
+
+    class Meta:
+        model = Customer
+        fields = ['id', 'total_spent', 'purchases']
+
+    def get_total_spent(self, obj):
+        user = self.context['request'].user
+        return Purchase.objects.filter(customer=user).aggregate(Sum('total_amount'))['total_amount__sum']

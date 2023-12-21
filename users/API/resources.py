@@ -5,7 +5,7 @@ from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.response import Response
 
 from users.API.permissions import IsProfileOwner
-from users.API.serializers import UserSerializer, UserRegisterSerializer
+from users.API.serializers import UserSerializer, UserRegisterSerializer, CustomerOrderSerializer
 from users.models import Customer, CustomTokenAuth
 
 
@@ -21,6 +21,12 @@ class UserViewSet(viewsets.ModelViewSet):
     queryset = Customer.objects.all()
     authentication_classes = [CustomTokenAuth]
 
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        if not self.request.user.is_superuser:
+            queryset = queryset.filter(id__in=[self.request.user.pk])
+        return queryset
+
     def get_permissions(self):
         if self.action in ['create']:
             permission_classes = []
@@ -34,8 +40,8 @@ class UserViewSet(viewsets.ModelViewSet):
     def get_serializer_class(self):
         if self.request.method == 'POST':
             return UserRegisterSerializer
-        # elif self.request.method == 'GET' and self.request.query_params.get('profile', '') == 'yes':
-        #     return UserProfileSerializer
+        elif self.request.method == 'GET' and self.request.query_params.get('profile', '') == 'yes':
+            return CustomerOrderSerializer
         return UserSerializer
 
     def perform_create(self, serializer):

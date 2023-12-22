@@ -25,5 +25,5 @@ class SessionCollisionError(Exception):
 # class NotEnoughMoneyException(Exception):
 #     pass
 #
-# class SoldTicketsException(Exception):
-#     pass
+class SoldTicketsException(Exception):
+    pass

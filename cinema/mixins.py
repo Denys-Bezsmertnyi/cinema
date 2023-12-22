@@ -18,7 +18,7 @@ class HallAndSessionMixin:
         self.object = self.get_object()
 
         if isinstance(self.object, MovieSession) and self.object.bought_places > 0:
-            messages.error(self.request, "Session has already had bought tickets.")
+            messages.error(self.request, "Session with bought tickets.")
             return redirect('cinema:session_list')
 
         if isinstance(self.object, CinemaHall) and hasattr(self.object, 'sessions') and any(

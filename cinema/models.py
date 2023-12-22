@@ -45,7 +45,7 @@ class MovieSession(models.Model):
 
 
 class Purchase(models.Model):
-    customer = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name="customer")
+    customer = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name="purchases")
     session = models.ForeignKey(MovieSession, on_delete=models.CASCADE, related_name="purchases")
     purchase_time = models.DateTimeField(auto_now_add=True)
     tickets = models.PositiveIntegerField(default=1)

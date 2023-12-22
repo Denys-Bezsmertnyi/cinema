@@ -1,10 +1,9 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LoginView, LogoutView
 from django.db.models import Sum
-from django.shortcuts import render
+
 from django.urls import reverse_lazy
-from django.views.generic import CreateView, ListView, DetailView
-from django.views.generic.edit import UpdateView, DeleteView
+from django.views.generic import CreateView, DetailView
 
 from cinema.models import Purchase
 from users.forms import RegisterForm

@@ -43,5 +43,4 @@ class CustomerOrderSerializer(serializers.ModelSerializer):
         fields = ['id', 'total_spent', 'purchases']
 
     def get_total_spent(self, obj):
-        user = self.context['request'].user
-        return Purchase.objects.filter(customer=user).aggregate(Sum('total_amount'))['total_amount__sum']
+        return Purchase.objects.filter(customer=obj).aggregate(total_spent=Sum('total_amount')).get('total_spent') or 0

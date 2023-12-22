@@ -19,7 +19,6 @@ class LogoutApiView(views.APIView):
 
 class UserViewSet(viewsets.ModelViewSet):
     queryset = Customer.objects.all()
-    authentication_classes = [CustomTokenAuth]
 
     def get_queryset(self):
         queryset = super().get_queryset()
@@ -31,10 +30,7 @@ class UserViewSet(viewsets.ModelViewSet):
         if self.action in ['create']:
             permission_classes = []
         elif self.action in ['list']:
-            permission_classes = [IsAdminUser]
-        else:
-            permission_classes = [IsProfileOwner]
-
+            permission_classes = [IsAuthenticated]
         return [permission() for permission in permission_classes]
 
     def get_serializer_class(self):

@@ -1,20 +1,16 @@
 from datetime import timedelta, datetime
 
 from django.db import transaction
-from django.db.models import Q, Sum
+from django.db.models import Q
 from django.utils import timezone
-from rest_framework import viewsets, status, serializers
-from rest_framework.decorators import action
-from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
-from rest_framework.response import Response
-from rest_framework.views import APIView
+from rest_framework import viewsets, serializers, mixins
+from rest_framework.permissions import IsAuthenticated
 
 from cinema.API.mixins import CheckPurchasedTicketsMixin
 from cinema.API.serializers import SessionReadSerializer, HallReadSerializer, MovieSerializer, SessionWriteSerializer, \
-    HallWriteSerializer, PurchaseWriteSerializer, PurchaseReadSerializer
+    HallWriteSerializer, PurchaseWriteSerializer
 from cinema.models import CinemaHall, MovieSession, Movie, Purchase
 from users.API.permissions import IsAdminOrReadOnly
-from users.models import Customer
 
 
 class HallViewSet(CheckPurchasedTicketsMixin, viewsets.ModelViewSet):
@@ -80,14 +76,10 @@ class MovieViewSet(viewsets.ModelViewSet):
     serializer_class = MovieSerializer
 
 
-class PurchaseViewSet(viewsets.ModelViewSet):
+class PurchaseViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
     queryset = Purchase.objects.all()
     permission_classes = [IsAuthenticated]
-
-    def get_serializer_class(self):
-        if self.request.method == 'POST':
-            return PurchaseWriteSerializer
-        return PurchaseReadSerializer
+    serializer_class = PurchaseWriteSerializer
 
     def perform_create(self, serializer):
         try:

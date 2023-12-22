@@ -1,12 +1,11 @@
 from django.contrib.auth.hashers import make_password
 from rest_framework import views, status, viewsets
 from rest_framework.authtoken.models import Token
-from rest_framework.permissions import IsAuthenticated, IsAdminUser
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
-from users.API.permissions import IsProfileOwner
 from users.API.serializers import UserSerializer, UserRegisterSerializer, CustomerOrderSerializer
-from users.models import Customer, CustomTokenAuth
+from users.models import Customer
 
 
 class LogoutApiView(views.APIView):

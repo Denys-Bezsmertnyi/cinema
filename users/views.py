@@ -1,3 +1,4 @@
+from django.contrib.auth import login
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LoginView, LogoutView
 from django.db.models import Sum
@@ -21,6 +22,11 @@ class UserRegisterView(CreateView):
     template_name = 'users/register.html'
     form_class = RegisterForm
     success_url = reverse_lazy('cinema:home_page')
+
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        login(self.request, self.object)
+        return response
 
 
 class UserLogoutView(LoginRequiredMixin, LogoutView):

@@ -1,11 +1,33 @@
+import datetime
+
 from django.contrib.auth.hashers import make_password
 from rest_framework import views, status, viewsets
 from rest_framework.authtoken.models import Token
+from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
+from cinema_diploma import settings
 from users.API.serializers import UserSerializer, UserRegisterSerializer, CustomerOrderSerializer
 from users.models import Customer
+
+
+class CustomAuthTokenLogin(ObtainAuthToken):
+    def post(self, request, *args, **kwargs):
+        serializer = self.serializer_class(data=request.data,
+                                           context={'request': request})
+        serializer.is_valid(raise_exception=True)
+        user = serializer.validated_data['user']
+        now = datetime.datetime.now()
+        result = Token.objects.filter(user=user,
+                                      created__lt=now - datetime.timedelta(
+                                          seconds=settings.TIME_SINCE_LAST_ACTION)).delete()
+        token, created = Token.objects.get_or_create(user=user)
+        return Response({
+            'user_id': user.pk,
+            'token': token.key,
+            'username': user.username
+        })
 
 
 class LogoutApiView(views.APIView):

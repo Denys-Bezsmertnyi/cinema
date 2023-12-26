@@ -11,7 +11,9 @@
 
     <section id="popular" class="pt-4 pb-5 bg_grey">
 <div class="container">
+{% if request.user.is_superuser %}
 <h6 class="mt-4 text-center"><a class="button" href="{% url 'cinema:create_session'%}"><i class="fa fa-play-circle align-middle me-1"></i> Create Session</a></h6>
+ {% endif %}
  <div class="row trend_1">
   <div class="col-md-12">
    <div class="trend_1l">

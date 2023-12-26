@@ -35,10 +35,10 @@ class SessionWriteSerializer(serializers.ModelSerializer):
         validate_date_range(date_start, date_end)
         validate_time_range(time_start, time_end)
         validate_past_date(date_end)
+        validate_collisions(self, hall, date_start, date_end, time_start)
         if self.instance:
             if self.instance.bought_places > 0:
-                raise serializers.ValidationError('You cannot delete or update a movie_show with sold seats.')
-            validate_collisions(self, hall, date_start, date_end, time_start)
+                raise serializers.ValidationError('You cannot delete or update a session with sold tickets.')
         return data
 
 
@@ -56,8 +56,9 @@ class HallWriteSerializer(serializers.ModelSerializer):
         fields = ['id', 'name', 'places', 'overview']
 
     def validate(self, data):
-        if any([session.bought_places > 0 for session in self.instance.sessions.all()]):
-            raise serializers.ValidationError('You cannot modify a cinema hall with booked shows.')
+        if self.instance:
+            if any([session.bought_places > 0 for session in self.instance.sessions.all()]):
+                raise serializers.ValidationError('You cannot modify a cinema hall with booked shows.')
         return data
 
 

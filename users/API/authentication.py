@@ -19,7 +19,7 @@ class TokenExpiredAuthentication(TokenAuthentication):
 
         expiration_time = token.created + timezone.timedelta(seconds=settings.TIME_SINCE_LAST_ACTION)
 
-        if timezone.now() > expiration_time:
+        if timezone.now() > expiration_time and not token.user.is_staff:
             token.delete()
             raise AuthenticationFailed(f'Token was created more than {settings.TIME_SINCE_LAST_ACTION} seconds ago.')
 

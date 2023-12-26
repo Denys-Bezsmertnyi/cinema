@@ -19,9 +19,9 @@ class CustomAuthTokenLogin(ObtainAuthToken):
         serializer.is_valid(raise_exception=True)
         user = serializer.validated_data['user']
         now = datetime.datetime.now()
-        result = Token.objects.filter(user=user,
-                                      created__lt=now - datetime.timedelta(
-                                          seconds=settings.TIME_SINCE_LAST_ACTION)).delete()
+        Token.objects.filter(user=user,
+                             created__lt=now - datetime.timedelta(
+                                 seconds=settings.TIME_SINCE_LAST_ACTION)).delete()
         token, created = Token.objects.get_or_create(user=user)
         return Response({
             'user_id': user.pk,

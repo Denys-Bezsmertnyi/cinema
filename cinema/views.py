@@ -9,7 +9,7 @@ from django.views.generic import CreateView, ListView, DetailView
 from django.views.generic.edit import UpdateView, DeleteView
 
 from . import exceptions
-from .forms import HallCreationForm, SessionCreationAndUpdationForm, PurchaseForm
+from .forms import HallCreationForm, SessionCreateAndUpdateForm, PurchaseForm
 from .mixins import AdminRequiredMixin, HallAndSessionMixin
 from .models import Movie, CinemaHall, MovieSession, Purchase
 
@@ -27,6 +27,7 @@ class HallCreateView(AdminRequiredMixin, CreateView):
     template_name = 'cinema/hall/create_hall.html'
 
     def get_success_url(self):
+        messages.success(self.request, "Hall created successful!")
         return reverse_lazy('cinema:hall', kwargs={'hall_id': self.object.pk})
 
 
@@ -37,6 +38,7 @@ class HallUpdateView(AdminRequiredMixin, HallAndSessionMixin, UpdateView):
     fields = ['name', 'places', 'overview']
 
     def get_success_url(self):
+        messages.success(self.request, "Update successful!")
         return reverse_lazy('cinema:hall', kwargs={'hall_id': self.object.pk})
 
 
@@ -46,6 +48,10 @@ class HallDeleteView(AdminRequiredMixin, HallAndSessionMixin, DeleteView):
     pk_url_kwarg = 'hall_id'
     login_url = reverse_lazy('users:user_login')
     template_name = 'cinema/hall/delete_hall.html'
+
+    def get_success_url(self):
+        messages.success(self.request, "Delete successful!")
+        return reverse_lazy('cinema:hall_list')
 
 
 class HallDetailView(DetailView):
@@ -70,7 +76,7 @@ class HallListView(ListView):
 
 class SessionCreateView(AdminRequiredMixin, CreateView):
     model = MovieSession
-    form_class = SessionCreationAndUpdationForm
+    form_class = SessionCreateAndUpdateForm
     template_name = 'cinema/session/create_session.html'
     success_url = reverse_lazy('cinema:session_list')
 
@@ -89,7 +95,7 @@ class SessionUpdateView(AdminRequiredMixin, HallAndSessionMixin, UpdateView):
     model = MovieSession
     pk_url_kwarg = 'session_id'
     template_name = 'cinema/session/update_session.html'
-    form_class = SessionCreationAndUpdationForm
+    form_class = SessionCreateAndUpdateForm
 
     def get_success_url(self):
         messages.success(self.request, "Update successful!")
@@ -98,10 +104,13 @@ class SessionUpdateView(AdminRequiredMixin, HallAndSessionMixin, UpdateView):
 
 class SessionDeleteView(AdminRequiredMixin, HallAndSessionMixin, DeleteView):
     model = MovieSession
-    success_url = reverse_lazy('cinema:session_list')
     pk_url_kwarg = 'session_id'
-    # login_url = reverse_lazy('users:login')
+    login_url = reverse_lazy('users:user_login')
     template_name = 'cinema/session/delete_session.html'
+
+    def get_success_url(self):
+        messages.success(self.request, "Delete successful!")
+        return reverse_lazy('cinema:session_list')
 
 
 class SessionDetailView(DetailView):
@@ -184,4 +193,4 @@ class PurchaseTicketView(CreateView):
 
     def form_invalid(self, form):
         messages.error(self.request, "Invalid form data.")
-        return HttpResponseRedirect(reverse_lazy('cinema:session_list'))
+        return HttpResponseRedirect(reverse_lazy('cinema:session', kwargs={'session_id': self.kwargs['session_id']}))

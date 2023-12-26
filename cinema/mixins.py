@@ -1,8 +1,6 @@
 from django.contrib import messages
 from django.contrib.auth.mixins import UserPassesTestMixin, AccessMixin
 from django.shortcuts import redirect
-
-from cinema.exceptions import SoldTicketsException
 from cinema.models import MovieSession, CinemaHall
 
 
@@ -24,7 +22,7 @@ class HallAndSessionMixin:
         if isinstance(self.object, CinemaHall) and hasattr(self.object, 'sessions') and any(
                 session.bought_places > 0 for session in self.object.sessions.all()):
             messages.error(self.request, "Hall has sessions with bought tickets.")
-            return redirect('cinema:session_list')
+            return redirect('cinema:hall_list')
 
         return super().get(request, *args, **kwargs)
 
@@ -38,6 +36,6 @@ class HallAndSessionMixin:
         if isinstance(self.object, CinemaHall) and hasattr(self.object, 'sessions') and any(
                 session.bought_places > 0 for session in self.object.sessions.all()):
             messages.error(self.request, "Hall has sessions with bought tickets.")
-            return redirect('cinema:session_list')
+            return redirect('cinema:hall_list')
 
         return super().post(request, *args, **kwargs)

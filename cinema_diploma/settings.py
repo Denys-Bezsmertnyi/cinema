@@ -82,6 +82,9 @@ DATABASES = {
         'PASSWORD': 'mypass',
         'HOST': 'localhost',
         'PORT': '5432',
+        'TEST': {
+            'NAME': 'db_test',
+        },
     }
 }
 
@@ -130,10 +133,9 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 AUTH_USER_MODEL = "users.Customer"
 TIME_SINCE_LAST_ACTION = 60
 
-
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        'users.models.CustomTokenAuth',
+        'users.API.authentication.TokenExpiredAuthentication',
         'rest_framework.authentication.TokenAuthentication',
     ]
 }

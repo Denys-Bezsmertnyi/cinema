@@ -13,7 +13,7 @@ class HallCreationForm(forms.ModelForm):
         fields = '__all__'
 
 
-class SessionCreationAndUpdationForm(forms.ModelForm):
+class SessionCreateAndUpdateForm(forms.ModelForm):
     class Meta:
         model = MovieSession
         fields = ['hall', 'price', 'movie', 'time_start', 'time_end', 'date_start', 'date_end']
